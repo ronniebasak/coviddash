@@ -1,0 +1,11 @@
+{
+    "covid19dash": {
+        "informatics": {
+            "schema": {
+                "url": "/api/getCovidData",
+                "body": {
+                }
+            }
+        }
+    }
+}
