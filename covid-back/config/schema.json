@@ -1,8 +1,22 @@
 {
     "covid19dash": {
-        "informatics": {
+        "global": {
             "schema": {
-                "url": "/api/getCovidData",
+                "url": "/api/getGlobalData",
+                "body": {
+                }
+            }
+        },
+        "countries": {
+            "schema": {
+                "url": "/api/getCountriesData",
+                "body": {
+                }
+            }
+        },
+        "history": {
+            "schema": {
+                "url": "/api/getHistoryData",
                 "body": {
                 }
             }

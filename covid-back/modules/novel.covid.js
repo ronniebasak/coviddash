@@ -13,9 +13,8 @@ urls.getHistoricalData = `${urls.base}/v2/historical`
 async function getGlobalData(){
     var options = {
         'method': 'GET',
-        'url': '',
+        'url': urls.getGlobalData,
         'headers': {
-          'Cookie': '__cfduid=db2afb5fe5a7948ce997fa09cea57198e1585408995'
         }
     };
 
@@ -91,3 +90,7 @@ module.exports = {
     getGlobalData,
     getHistoricalData
 }
+
+
+// getForCountry('india')
+// .then(data => console.log(data))

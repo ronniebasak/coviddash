@@ -1,0 +1,12 @@
+{
+    "development": {
+        "globalData": "http://localhost:44001/api/getGlobalData",
+        "countriesData": "http://localhost:44001/api/getCountriesData",
+        "historyData": "http://localhost:44001/api/getHistoryData"
+    },
+    "production": {
+        "globalData": "http://localhost:44001/api/getGlobalData",
+        "countriesData": "http://localhost:44001/api/getCountriesData",
+        "historyData": "http://localhost:44001/api/getHistoryData"
+    }
+}

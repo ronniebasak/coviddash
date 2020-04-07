@@ -1,13 +1,15 @@
 globalData = {} // since global data is less 
 'use strict';
 const port = 44001;
-const crontab = require('./jobs/cron')
+const crontab = require('./jobs/cron'); // start cron job
 const fastify = require('fastify')({
     logger: true
 })
 
 const cors = require('cors');
 fastify.use(cors());
+
+crontab.handleCron();
 
 fastify.register(require('./routes/covid.routes'))
 
