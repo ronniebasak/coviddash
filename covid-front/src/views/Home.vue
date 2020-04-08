@@ -1,10 +1,10 @@
 <template>
   <div class="home">
     <div class="map"> 
-      <WorldMap @viewReset="resetView = false" :resetView="resetView"/>
+      <WorldMap @viewReset="resetView = false" :resetView="resetView" :countryData="countryWiseCounter"/>
     </div>
     <div class="sidebar">
-      <button @click="resetView = true">ASJD</button>
+      
     </div>
   </div>
 </template>
@@ -32,7 +32,7 @@ export default {
   methods: {
     async handleCountryData(){
       let data = await pullCountryData();
-      console.log(data)
+      this.countryWiseCounter = data;
     }
   },
   mounted(){
