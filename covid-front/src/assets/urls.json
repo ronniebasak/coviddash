@@ -5,8 +5,8 @@
         "historyData": "http://localhost:44001/api/getHistoryData"
     },
     "production": {
-        "globalData": "http://localhost:44001/api/getGlobalData",
-        "countriesData": "http://localhost:44001/api/getCountriesData",
-        "historyData": "http://localhost:44001/api/getHistoryData"
+        "globalData": "https://stats.iamsohan.in/covid-back/api/getGlobalData",
+        "countriesData": "https://stats.iamsohan.in/covid-back/api/getCountriesData",
+        "historyData": "https://stats.iamsohan.in/covid-back/api/getHistoryData"
     }
 }
