@@ -140,7 +140,7 @@ export default {
                this.cViewBox = `${obj.x} ${obj.y} ${obj.width} ${obj.height}`
             })
 
-         this.$emit("selectedCountry", thisCountry);
+         this.$emit("clickedCountry", thisCountry);
       },
 
       zoomOut(){
@@ -195,10 +195,12 @@ export default {
          this.tooltip.active = this.countryData[thisCountry.countryCode]?.active;
          this.tooltip.dead = this.countryData[thisCountry.countryCode]?.deaths;
          ev.preventDefault()
+         this.$emit("selectedCountry", this.countryData[thisCountry.countryCode])
       },
 
       hideToolTip(ev){
          this.tooltip.display = 0;
+         this.$emit("unselectCountry")
       },
 
       findColor(countryCode){
