@@ -235,7 +235,7 @@ export default {
                let total = this.countryData[country.countryCode]?.cases;
                console.log(country.countryCode, "TOT", total, "MT", maxTotal)
                let v = Math.floor((Math.log(total)/Math.log(maxTotal)) * 100)
-               country.color = `hsl(${(v-100)*2.5}, ${v}%, ${Math.log(v)*10   }%)`
+               country.color = `hsl(${(100-v)*1.2  }, ${40+v/2}%, ${Math.log(v)*11   }%)`
             }
 
             return 0;
