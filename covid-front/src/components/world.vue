@@ -214,6 +214,7 @@ export default {
       handleZoom(ev){
          ev.preventDefault();
          this.worldTransformer.transition = false;
+         
          if(ev.ctrlKey){
             this.worldTransformer.scaleFactor -= ev.deltaY * 0.01;
             this.worldTransformer.xFactor -= ev.deltaY * 0.01;
