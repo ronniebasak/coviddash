@@ -1,7 +1,7 @@
 <template>
   <div class="home">
-    <div class="map"> 
-      <button class="restore"  :class="{inactive: !viewZoom}" @click="resetView=true; viewZoom = false">Reset</button>
+    <div class="map" @keyup.esc="resetView = true; viewZoom = false"> 
+      <button class="restore"  :class="{inactive: !viewZoom}" @click="resetView=true; viewZoom = false">X</button>
       <WorldMap @viewReset="resetView = false" :resetView="resetView" :countryData="countryWiseCounter" @selectedCountry="selectCountry" @clickedCountry="viewZoom=true"/>
     </div>
     <div class="sidebar">
@@ -116,11 +116,11 @@ button.restore {
   position: absolute;
   top: 15px;
   left: 15px;
-  width: 64px;
-  height: 64px;
+  width: 48px;
+  height: 48px;
   background: white;
-  border: 5px solid #c947e9;
-  border-radius: 64px;
+  border: 5px solid #6649e7;
+  border-radius: 32px;
   display: flex;
   align-content: center;
   justify-content: center;

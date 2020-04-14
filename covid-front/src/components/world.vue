@@ -6,8 +6,12 @@
       xmlns="http://www.w3.org/2000/svg"
       mapsvg:geoViewBox="-169.110266 83.600842 190.486279 -58.508473"
       :viewBox="cViewBox"
+      @wheel="handleZoom"
    >
-
+   <g :style="{
+      transition: `${worldTransformer.transition ? 'transform 0.3s ease-in-out' : 'off'}`, 
+      transform: `scale(${worldTransformer.scaleFactor}) translateX(${worldTransformer.xFactor}px) translateY(${worldTransformer.yFactor}px)`,
+      transformOrigin: `${worldTransformer.xPivot}px ${worldTransformer.yPivot}px`}" >
       <path v-for="country in world.filter(c => !c.inactive)" :key="country.countryCode" 
          :d="country.path"
          :title="country.countryName"
@@ -24,7 +28,7 @@
             inactive: country.inactive
          }"
       />
-   
+   </g>
    </svg>
 
    <div :style="{
@@ -65,6 +69,17 @@ export default {
          ogViewBox: "0 0 1009.6727 665.96301",
          cViewBox: "0 0 1009.6727 665.96301",
          aspect: 1009.6727/665.96301,
+         worldTransformer: {
+            width: 1009.6727,
+            height: 665.96301,
+            transition: true,
+            scaleFactor: 1,
+            xFactor: 0,
+            yFactor: 0,
+            xPivot: 0,
+            yPivot: 0,
+         },
+
 
          tooltip: {
             x: 110,
@@ -81,16 +96,16 @@ export default {
       zoomTo(ev){
          console.log(ev.target.id)
          let thisCountry = undefined;
-         for(let country of this.world){
-            if (country.countryCode != ev.target.id){
-               country.active = false;
-               country.inactive = true;
-            } else {
-               country.active = true;
-               country.inactive = false;
-               thisCountry = country;
-            }
-         }
+         // for(let country of this.world){
+         //    if (country.countryCode != ev.target.id){
+         //       country.active = false;
+         //       country.inactive = true;
+         //    } else {
+         //       country.active = true;  
+         //       country.inactive = false;
+         //       thisCountry = country;
+         //    }
+         // }
          let [oldX, oldY, oldW, oldH] = this.cViewBox.split(" ")
          let self = this;
          let bbox = ev.target.getBBox();
@@ -104,8 +119,6 @@ export default {
          };
 
          let dstAspect = dst.width/dst.height;
-         // console.log("TARGET", this.aspect)
-         // console.log("OLD AASPEC", dstAspect)
          if(dstAspect > this.aspect){ // wider than required, add height
             let targetH = dst.width/this.aspect;
             let deltaH = targetH - dst.height;
@@ -118,9 +131,6 @@ export default {
             dst.x = dst.x - (deltaW/2)
             dst.width = targetW; 
          } 
-
-         // console.log("NEW ASP", dst.width/dst.height)
-
          dst = {
             ...dst
          }
@@ -131,14 +141,12 @@ export default {
             width: +oldW,
             height: +oldH
          }
-         let an = createjs.Tween.get(obj)
-            .to(dst, 300, createjs.Ease.quadInOut)
-            .play();
 
-         an.addEventListener("change", () => {
-            // console.log("Change")
-               this.cViewBox = `${obj.x} ${obj.y} ${obj.width} ${obj.height}`
-            })
+         this.worldTransformer.scaleFactor = obj.height/dst.height;
+         // this.worldTransformer.xPivot = -dst.x + dst.width/2;
+         // this.worldTransformer.yPivot = -dst.y + dst.height/2;
+         this.worldTransformer.xFactor = -dst.x - dst.width/(1009.6727/this.worldTransformer.xPivot) + this.worldTransformer.xPivot;
+         this.worldTransformer.yFactor = -dst.y - dst.height/(665.96301/this.worldTransformer.yPivot) + this.worldTransformer.yPivot;
 
          this.$emit("clickedCountry", thisCountry);
       },
@@ -160,15 +168,11 @@ export default {
             width: oldW,
             height: oldH
          }
-         let an = createjs.Tween.get(obj)
-            .to(dst, 300, createjs.Ease.quadInOut)
-            .play();
 
-         an.addEventListener("change", () => {
-            // console.log("Change")
-               this.cViewBox = `${obj.x} ${obj.y} ${obj.width} ${obj.height}`
-            })
-
+      this.worldTransformer.scaleFactor = 1;
+      this.worldTransformer.xFactor = 0;
+      this.worldTransformer.yFactor = 0;
+      // this.worldTransformer.xPivot = 
 
       for(let country of this.world){
             country.active = false;
@@ -205,6 +209,33 @@ export default {
 
       findColor(countryCode){
          this.countryData[countryCode]
+      },
+
+      handleZoom(ev){
+         ev.preventDefault();
+         this.worldTransformer.transition = false;
+         if(ev.ctrlKey){
+            this.worldTransformer.scaleFactor -= ev.deltaY * 0.01;
+            this.worldTransformer.xFactor -= ev.deltaY * 0.01;
+            this.worldTransformer.yFactor -= ev.deltaY * 0.01;
+         } else {
+            if(ev.shiftKey && ev.deltaX==0){
+               this.worldTransformer.xFactor -= ev.deltaY/this.worldTransformer.scaleFactor
+               this.worldTransformer.yFactor -= 0;
+            } else {
+               this.worldTransformer.xFactor -= ev.deltaX/this.worldTransformer.scaleFactor;
+               this.worldTransformer.yFactor -= ev.deltaY/this.worldTransformer.scaleFactor;
+            }
+   
+         }       
+         if(this.worldTransformer.scaleFactor < 1){
+            this.worldTransformer.scaleFactor = 1;
+         }
+
+         let self=this;
+         this.$nextTick(function(){
+            self.worldTransformer.transition = true
+         })
       }
    },
    watch: {
@@ -235,7 +266,7 @@ export default {
                let total = this.countryData[country.countryCode]?.cases;
                console.log(country.countryCode, "TOT", total, "MT", maxTotal)
                let v = Math.floor((Math.log(total)/Math.log(maxTotal)) * 100)
-               country.color = `hsl(${(100-v)*1.2  }, ${40+v/2}%, ${Math.log(v)*11   }%)`
+               country.color = `hsl(${(100-v)*1.5  }, ${33+v/1.5}%, ${ Math.log(v) * 10}%)`
             }
 
             return 0;
@@ -250,7 +281,8 @@ export default {
 .path-class {
    transition: 0.3s ease-in-out;
    stroke: transparent;
-   fill: lightblue
+   fill: lightblue;
+   // stroke: white;
 }
 
 .path-class.active {
@@ -262,7 +294,7 @@ export default {
    display: none;
 }
 
-.path-class:hover {
-   stroke: turquoise;
-}
+// .path-class:hover {
+//    fill: grey  !important;
+// }
 </style>
